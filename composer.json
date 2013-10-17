@@ -1,0 +1,16 @@
+{
+    "name": "qcubed/plugins/QAutocomplete2",
+    "description": "QCubed wrapper for the jquery.ui.autocomplete2.js jQuery plugin.",
+    "type": "library",
+    "keywords": ["qcubed", "autocomplete"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-0": { "": "includes/" }
+    },
+    "extra": {
+        "examples": ["autocomplete.php"]
+    }
+}
