@@ -11,7 +11,7 @@
 		public function __construct($objParentObject, $strControlId = null) {
 			parent::__construct($objParentObject, $strControlId);
 		
-			$this->AddPluginJavascriptFile("QAutocomplete2", "jquery.ui.autocomplete2.js");
+			$this->AddPluginJavascriptFile("autocomplete2", "jquery.ui.autocomplete2.js");
 		}
 						
 		protected function makeJqOptions() {
@@ -20,7 +20,7 @@
 			
 			$strJqOptions .= $this->makeJsProperty('MustMatch', 'mustMatch');
 			$strJqOptions .= $this->makeJsProperty('ComboBox', 'combo');
-			$strJqOptions .= $this->makeJsProperty('DisplayHtml', 'displayHtml');
+			$strJqOptions .= $this->makeJsProperty('DisplayHtml', 'renderHtml');
 			if ($strJqOptions) $strJqOptions = substr($strJqOptions, 0, -2);
 			return $strJqOptions;
 		}

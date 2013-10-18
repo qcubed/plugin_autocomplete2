@@ -1,5 +1,5 @@
 {
-    "name": "qcubed/plugins/QAutocomplete2",
+    "name": "qcubed/plugins/autocomplete2",
     "description": "QCubed wrapper for the jquery.ui.autocomplete2.js jQuery plugin.",
     "type": "library",
     "keywords": ["qcubed", "autocomplete"],
