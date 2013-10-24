@@ -14,7 +14,7 @@
 			$this->txtAutocomplete2 = new QAutocomplete2($this);
 			$this->txtAutocomplete2->MustMatch = true;
 			
-			$this->txtAutocomplete3 = new QAutocomplete3($this);
+			$this->txtAutocomplete3 = new QAutocomplete2($this);
 			$this->txtAutocomplete3->ComboBox = true;
 		}		
 	}
