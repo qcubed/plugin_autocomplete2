@@ -16,7 +16,7 @@
 						
 		protected function makeJqOptions() {
 			$strJqOptions = parent::makeJqOptions();
-			$strJqOptions .= ', ';
+			if ($strJqOptions) $strJqOptions .= ', ';
 			
 			$strJqOptions .= $this->makeJsProperty('MustMatch', 'mustMatch');
 			$strJqOptions .= $this->makeJsProperty('ComboBox', 'combo');
