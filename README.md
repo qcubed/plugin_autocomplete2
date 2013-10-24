@@ -11,7 +11,7 @@ This control is installable by Composer. To install, add the following to the co
 	"repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/qcubed/QAutocomplete2"
+            "url": "https://github.com/qcubed/plugin_autocomplete2"
         }
     ],
 ```    
