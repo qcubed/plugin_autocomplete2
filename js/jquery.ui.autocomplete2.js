@@ -16,6 +16,10 @@
 *	- renderHtml will use the label of the returned item as html to display in the list
 *	- combo will render as a combobox
 *	- comboWidth specifies the width of the combo box when you need to expressly set it
+*   - multiValDelim The delimiter that separates the items in a multiple selection situation. Setting this
+*    puts this in a mode where multiple selections are allowed.
+*	- Sends "this" to the filter function so that the filter can respond differently based on options.
+*   - Added regEx option so you can more easily change the filtering expression.
 *
 *	Usage:
 *	- Place in your script immediately after inclusion of jquery ui. 
@@ -26,21 +30,72 @@
 *	  They could help by making the blur event call in autocomplete a function so that it 
 *	  is over-rideable. 
 **/
- 
+
 (function( $, undefined ) {
 
 
 $.widget( "ui.autocomplete", $.ui.autocomplete, {
 	options: {
-		mustMatch: false,	// disallow items that aren't in the list
-		renderHtml: false,	// treat the item label as html
+		mustMatch: false,
+		renderHtml: false,
 		combo: false,
-		comboWidth: null
+		comboWidth: null,
+        multiValDelim: null
+	},
+	curTerm: function (newVal) {
+		// multi-selection helper
+		// if newVal is present, replaces that term with newVal and returns the full value of the field
+		// if no newVal, returns just the current term
+		
+		if (!this.options.multiValDelim) {
+			if (newVal !== undefined) { // setting the value
+				return newVal;
+			} 
+			else {
+				return this._value();
+			}
+		}
+		
+        var input = this.element;
+		var curVal = this._value();
+		var delimExp = new RegExp (this.options.multiValDelim + "\\s*", "g");
+		var delim = this.options.multiValDelim;
+		
+		// get caret position
+		var caretPos = 0;
+		if (document.selection) { // IE
+			input.focus();
+			var range = document.selection.createRange();
+			range.moveStart("character", -curVal.length);
+			caretPos = range.text.length;
+		} else if (input[0].selectionStart) { // MOZ
+			caretPos = input[0].selectionStart;
+		}
+		// find which term the caret is in
+		var matches = curVal.substring(0, caretPos).match(delimExp);
+		var termIdx = matches ? matches.length : 0;
+		var terms = curVal.split(delimExp);
+		if (termIdx >= terms.length) {
+			termIdx = terms.length;
+			terms.push("");
+		}
+		if (newVal !== undefined) { // setting the value
+			if (newVal !== null)
+				terms[termIdx] = newVal;
+			else
+				terms.splice(termIdx, 1);
+			if (terms.length && terms[terms.length-1]) {
+				terms.push("");
+			}
+			return terms.join(delim + ' ');
+		}
+		return terms[termIdx];
 	},
 	_create: function() {
+        var that = this;
+        var input = this.element;
+
 		if (this.options.combo) {
-			var that = this;
-			var input = this.element;
 			var fldHeight = input.outerHeight() - 2;
 			var fldWidth = input.css("width");
 			
@@ -128,7 +183,17 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 					paddingBottom:'4px'
 				});*/
 
-		};
+		}
+        else if (this.options.multiValDelim) {
+            input.on("autocompleteselect", function (event, ui) {
+                var sel = ui.item ? (ui.item.value ? ui.item.value : ui.item.label) : "";
+                this.value = that.curTerm(sel);
+                return false;
+            })
+            .on("autocompletefocus", function () {
+                return false;
+            });
+        };
 		
 		this._on( this.element, {
 			keydown: function( event ) {
@@ -183,7 +248,8 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		this._setOption('mustMatch', this.options.mustMatch);
 		this._setOption('renderHtml', this.options.renderHtml);
 		this._setOption('combo', this.options.combo);
-		this._setOption('comboWidth', this.options.comboWidth);
+        this._setOption('comboWidth', this.options.comboWidth);
+        this._setOption('multiValDelim', this.options.multiValDelim);
 	},
 	_searchTimeout: function( event ) {
 		clearTimeout( this.searching );
@@ -220,9 +286,11 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 			content = this._normalize( content );
 		}
 		this._trigger( "response", null, { content: content } );
-		if ( !this.options.disabled && content && content.length && !this.cancelSearch ) {
+		if ( !this.options.disabled && !this.cancelSearch ) {
 			if (this._suggest( content )) {
 				this._trigger( "open" );
+			} else {
+				this._close();
 			}
 		} else {
 			// use ._close() instead of .close() so we don't cancel future searches
@@ -237,8 +305,8 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		if ( this.previous !== this._value() && 
 				!this.pending &&
 				!this.searching) { // still have pending searches, so don't change yet
-			if (this.mustMatch && !this.selectedItem) {
-				this._value( "" );
+			if (this.options.mustMatch && !this.selectedItem) {
+				this._value( this.curTerm(null));
 				this.term = '';
 			}
 			this._trigger( "change", event, { item: this.selectedItem } );
@@ -260,6 +328,10 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		var newVal;
 					    
 		if (!this.cancelMenu) {
+			if (!items || !items.length) {
+				return false; // nothing to select, mustMatch handled in _change
+			}
+			
 			var ul = this.menu.element
 				.empty()
 				.zIndex( this.element.zIndex() + 1 );
@@ -287,29 +359,45 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 			}
 			return true;
 		} else {  // get data even when we don't want to pop up menu
+			if (!items || !items.length || !this.options.autoFocus) {	// late suggestion, but nothing matched
+				if (this.options.mustMatch) {
+					// make sure we empty it, only trigger if old value was not empty
+					var oldTerm = this.curTerm();
+					this._value(this.curTerm(null));
+					this.selectedItem = null;
+					if (oldTerm && this.pending < 2) {
+						this._trigger( "change", this.searchEvent, { item: this.selectedItem } );
+						this.cancelMenu = false;
+					}
+				}
+				return false;
+			}
+			
 			// todo: test for exact match so we can select an item even when autofocus is off?
 			if ( this.options.autoFocus) {
 				if (items[0] && this.term.length > 0)  {
+					// find item marked as selected
 					var filteredItems = jQuery.grep (items, function(item, index) {return (item.selected);});
 					if (filteredItems.length > 0) {
 						newVal = filteredItems[0].value;
 						this.selectedItem = filteredItems[0];
 					} else {
+						// find first item
 						newVal = items[0].value;
 						this.selectedItem = items[0];
 					}
 				} else {
+					// find no items
 					newVal = "";
 					this.selectedItem = null;
 				}
-				this._value(newVal);
+				this._value(this.curTerm(newVal));
 				
 				// special case, trigger a change, we have received a response, but we previously lost focus
 				if (this.pending < 2) {
 					this._trigger( "change", this.searchEvent, { item: this.selectedItem } );
 					this.cancelMenu = false;
 				}
-
 			}
 			return false;
 		}
@@ -332,8 +420,11 @@ $.extend( $.ui.autocomplete, {
 	escapeRegex: function( value ) {
 		return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
 	},
+	regEx: function ( term ) {
+		return $.ui.autocomplete.escapeRegex(term);
+	},
 	filter: function(array, term, instance) {
-		var matcher = new RegExp( $.ui.autocomplete.escapeRegex(term), "i" );
+		var matcher =  new RegExp( this.regEx(term), "i" );
 		return $.grep( array, function(value) {
 			return matcher.test( instance.options.renderHtml ? (value.value || value) : (value.label || value.value || value) );
 		});
@@ -342,3 +433,5 @@ $.extend( $.ui.autocomplete, {
 
 
 }( jQuery ));
+
+
