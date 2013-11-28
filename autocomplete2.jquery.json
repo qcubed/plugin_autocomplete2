@@ -6,7 +6,7 @@
         "autocomplete2",
         "autocomplete"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": {
         "name": "QCubed"
     },
@@ -20,9 +20,9 @@
         "jquery": ">=1.8",
         "jquery-ui": ">=1.9"
     },
-    "bugs": "https://github.com/qcubed/plugin-autocomplete2/issues",
-    "homepage": "https://github.com/qcubed/plugin-autocomplete2",
-    "docs": "https://github.com/qcubed/plugin-autocomplete2",
-    "download": "https://github.com/qcubed/plugin-autocomplete2"
+    "bugs": "https://github.com/qcubed/plugin_autocomplete2/issues",
+    "homepage": "https://github.com/qcubed/plugin_autocomplete2",
+    "docs": "https://github.com/qcubed/plugin_autocomplete2",
+    "download": "https://github.com/qcubed/plugin_autocomplete2"
 
 }
