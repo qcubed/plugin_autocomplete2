@@ -42,6 +42,7 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		comboWidth: null,
         multiValDelim: null
 	},
+    _wrapper: null,
 	curTerm: function (newVal) {
 		// multi-selection helper
 		// if newVal is present, replaces that term with newVal and returns the full value of the field
@@ -95,6 +96,8 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
         var that = this;
         var input = this.element;
 
+        this._wrapper = input;
+
 		if (this.options.combo) {
 			var fldHeight = input.outerHeight() - 2;
 			var fldWidth = input.css("width");
@@ -106,6 +109,8 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 			
 			var wrapper = inputWrapper.wrap('<div>')
 				.parent();
+
+            this._wrapper = wrapper;
 			
 			// get initial size for comparison later
 			var w1 = input.width();
@@ -412,7 +417,27 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 		} else {
 			this._super();
 		}
-	}
+	},
+    _destroy: function() {
+        // undo wrapper
+        if (this.options.combo) {
+            var input = this.element;
+            var ariaSpan = $(input).prev();
+            var div = $(input).parent().parent();
+
+            ariaSpan.detach();
+            div.before(ariaSpan);
+            input.detach();
+            div.before(input);
+            div.remove();
+        }
+        this._super();
+    },
+    // return the object. If it has a wrapper, return that instead. Can't use widget or element, since they are used for other things.
+    wrapper: function() {
+        return this._wrapper;
+    }
+
 
 });
 
