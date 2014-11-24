@@ -23,7 +23,7 @@ and
 
 ```
 
-## jquery.ui.autocomplete.js
+## jquery.ui.autocomplete2.js
 
 This plugin adds a few features that are missing from the standard jQuery UI Autocomplete and some of which the jQuery UI team has said they won't incorporate into their code.
 
