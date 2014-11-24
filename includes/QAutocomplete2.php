@@ -171,6 +171,7 @@
 		public static function GetMetaParams() {
 			return array_merge(parent::GetMetaParams(), array(
 				new QMetaParam (get_called_class(), 'ComboBox', 'Should this be displayed as a combobox', QType::Boolean),
+				new QMetaParam (get_called_class(), 'ComboWidth', 'Use this to specify a pixel width for the combo box, if the control guesses wrong.', QType::Integer),
 				new QMetaParam (get_called_class(), 'DisplayHtml', 'Are we trying to display HTML in the list.', QType::Boolean),
 				new QMetaParam (get_called_class(), 'MultipleValueDelimiter', 'Enables this as a multi-value displayer, and sets the delimiter.', QType::String),
 				new QMetaParam (get_called_class(), 'MustMatch', 'Require a value that is in the list. Default allows text to be entered that does not match an item in the list.', QType::Boolean)
