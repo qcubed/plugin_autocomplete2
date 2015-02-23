@@ -18,50 +18,19 @@
 			$this->AddPluginJavascriptFile("autocomplete2", "jquery.ui.autocomplete2.js");
 		}
 
-		const FILTER_CONTAINS ='function(term) { return $.ui.autocomplete2.escapeRegex(term);}'; // this is the default filter
-		const FILTER_STARTS_WITH ='function(term) { return ("^" + $.ui.autocomplete2.escapeRegex(term)); }';
-
-		/**
-		 * Set a filter to use when using a simple array as a source (in non-ajax mode). Note that ALL non-ajax autocompletes on the page
-		 * will use the new filter.
-		 *
-		 * @static
-		 * @throws QCallerException
-		 * @param string|QJsClosure $filter represents a closure that will be used as the global filter function for jQuery autocomplete.
-		 * The closure should take two arguments - array and term. array is the list of all available choices, term is what the user typed in the input box.
-		 * It should return an array of suggestions to show in the drop-down.
-		 * <b>Example:</b> <code>QAutocomplete::UseFilter(QAutocomplete::FILTER_STARTS_WITH)</code>
-		 * @return void
-		 *
-		 * @see QAutocomplete::FILTER_CONTAINS
-		 * @see QAutocomplete::FILTER_STARTS_WITH
-		 */
-		static public function UseFilter($filter) {
-			if ($filter instanceof QJsClosure) {
-				$filter = $filter->toJsObject();
-			} else if (!is_string($filter)) {
-				throw new QCallerException("filter must be either a string or an instance of QJsClosure");
-			}
-			$strJS = '(function($, undefined) { $.ui.autocomplete2.regEx = ' . $filter . '} (jQuery))';
-			QApplication::ExecuteJavaScript($strJS);
-		}
-
 		public function getJqSetupFunction() {
 			return 'autocomplete';
 		}
 
 
-		protected function makeJqOptions() {
-			$strJqOptions = parent::makeJqOptions();
-			if ($strJqOptions) $strJqOptions .= ', ';
-			
-			$strJqOptions .= $this->makeJsProperty('MustMatch', 'mustMatch');
-			$strJqOptions .= $this->makeJsProperty('ComboBox', 'combo');
-			$strJqOptions .= $this->makeJsProperty('ComboWidth', 'comboWidth');
-			$strJqOptions .= $this->makeJsProperty('DisplayHtml', 'renderHtml');
-			$strJqOptions .= $this->makeJsProperty('MultipleValueDelimiter', 'multiValDelim');
-			if ($strJqOptions) $strJqOptions = substr($strJqOptions, 0, -2);
-			return $strJqOptions;
+		protected function MakeJqOptions() {
+			$jqOptions = parent::MakeJqOptions();
+			if (!is_null($val = $this->MustMatch)) {$jqOptions['mustMatch'] = $val;}
+			if (!is_null($val = $this->ComboBox)) {$jqOptions['combo'] = $val;}
+			if (!is_null($val = $this->ComboWidth)) {$jqOptions['comboWidth'] = $val;}
+			if (!is_null($val = $this->DisplayHtml)) {$jqOptions['renderHtml'] = $val;}
+			if (!is_null($val = $this->MultipleValueDelimiter)) {$jqOptions['multiValDelim'] = $val;}
+			return $jqOptions;
 		}
 		
 		protected function JsReturnParam() {
@@ -168,13 +137,13 @@
 			}
 		}
 
-		public static function GetMetaParams() {
-			return array_merge(parent::GetMetaParams(), array(
-				new QMetaParam (get_called_class(), 'ComboBox', 'Should this be displayed as a combobox', QType::Boolean),
-				new QMetaParam (get_called_class(), 'ComboWidth', 'Use this to specify a pixel width for the combo box, if the control guesses wrong.', QType::Integer),
-				new QMetaParam (get_called_class(), 'DisplayHtml', 'Are we trying to display HTML in the list.', QType::Boolean),
-				new QMetaParam (get_called_class(), 'MultipleValueDelimiter', 'Enables this as a multi-value displayer, and sets the delimiter.', QType::String),
-				new QMetaParam (get_called_class(), 'MustMatch', 'Require a value that is in the list. Default allows text to be entered that does not match an item in the list.', QType::Boolean)
+		public static function GetModelConnectorParams() {
+			return array_merge(parent::GetModelConnectorParams(), array(
+				new QModelConnectorParam (get_called_class(), 'ComboBox', 'Should this be displayed as a combobox', QType::Boolean),
+				new QModelConnectorParam (get_called_class(), 'ComboWidth', 'Use this to specify a pixel width for the combo box, if the control guesses wrong.', QType::Integer),
+				new QModelConnectorParam (get_called_class(), 'DisplayHtml', 'Are we trying to display HTML in the list.', QType::Boolean),
+				new QModelConnectorParam (get_called_class(), 'MultipleValueDelimiter', 'Enables this as a multi-value displayer, and sets the delimiter.', QType::String),
+				new QModelConnectorParam (get_called_class(), 'MustMatch', 'Require a value that is in the list. Default allows text to be entered that does not match an item in the list.', QType::Boolean)
 			));
 		}
 	}

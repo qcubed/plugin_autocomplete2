@@ -442,12 +442,6 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 });
 
 $.extend( $.ui.autocomplete, {
-	escapeRegex: function( value ) {
-		return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-	},
-	regEx: function ( term ) {
-		return $.ui.autocomplete.escapeRegex(term);
-	},
 	filter: function(array, term, instance) {
 		var matcher =  new RegExp( this.regEx(term), "i" );
 		return $.grep( array, function(value) {
