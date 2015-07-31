@@ -6,22 +6,10 @@ This repo hosts both the jquery.ui.autocomplete2.js file and the corresponding Q
 
 QAutocomplete2 is a QCubed wrapper for the jQuery jquery.ui.autocomplate2.js plugin. 
 
-This control is installable by Composer. To install, add the following to the corresponding sections of your composer.json root file:
+This control is installable by Composer. To install, execute the following on your command line:
 ```
-	"repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/qcubed/plugin_autocomplete2"
-        }
-    ],
+	composer require qcubed/plugin_autocomplete2
 ```    
-and
-```
-	"require": {
-		"qcubed/plugin_autocomplete2": "dev-master"
-	},
-
-```
 
 ## jquery.ui.autocomplete2.js
 
