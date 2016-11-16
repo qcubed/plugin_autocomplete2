@@ -1,5 +1,5 @@
 <?php
-	require('../../../framework/qcubed.inc.php');
+	require('../../../qcubed/qcubed.inc.php');
 	
 	class SampleForm extends QForm {
 		protected $txtAutocomplete1;
