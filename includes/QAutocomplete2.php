@@ -1,4 +1,5 @@
 <?php
+	namespace QCubed\Plugin\QAutocomplete2;
 	class QAutocomplete2 extends QAutocompleteBase
 	{
 		/** @var boolean */
@@ -147,4 +148,3 @@
 			));
 		}
 	}
-?>
